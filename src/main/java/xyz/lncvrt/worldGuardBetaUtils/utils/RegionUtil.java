@@ -19,12 +19,13 @@ public class RegionUtil {
             if (regionName.equals(region) && regionConfig.has(action)) {
                 JsonObject actionConfig = regionConfig.getAsJsonObject(action);
                 JsonArray actions = actionConfig.getAsJsonArray("actions");
-                String permission = actionConfig.has("permission") ? actionConfig.get("permission").getAsString() : null;
 
-                if (permission == null || player.hasPermission(permission)) {
-                    for (JsonElement actionElement : actions) {
-                        JsonObject actionObject = actionElement.getAsJsonObject();
-                        String type = actionObject.get("type").getAsString();
+                for (JsonElement actionElement : actions) {
+                    JsonObject actionObject = actionElement.getAsJsonObject();
+                    String type = actionObject.get("type").getAsString();
+                    String permission = actionObject.has("permission") ? actionObject.get("permission").getAsString() : null;
+
+                    if (permission == null || player.hasPermission(permission)) {
                         if ("command".equals(type)) {
                             String command = ChatColor.translateAlternateColorCodes('&', actionObject.get("command").getAsString().replace("%name%", player.getName()).replace("%displayname%", player.getDisplayName()));
                             String executor = actionObject.has("executor") ? actionObject.get("executor").getAsString() : "player";
