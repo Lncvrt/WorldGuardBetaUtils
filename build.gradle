@@ -1,0 +1,45 @@
+plugins {
+    id 'java'
+}
+
+group = 'xyz.lncvrt'
+version = '1.0.0-alpha-1'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly(files("libs/project-poseidon-1.1.8.jar"))
+    compileOnly(files("libs/WorldGuard-5.2.2.jar"))
+    compileOnly(files("libs/WorldEdit-4.6.jar"))
+    implementation 'com.google.code.gson:gson:2.11.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+}
+
+def targetJavaVersion = 8
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        options.release.set(targetJavaVersion)
+    }
+}
+
+processResources {
+    def props = [version: version]
+    inputs.properties props
+    filteringCharset 'UTF-8'
+    filesMatching('paper-plugin.yml') {
+        expand props
+    }
+}
